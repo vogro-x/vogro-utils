@@ -14,16 +14,16 @@
 #ifndef __PARSE_HEADER_HPP__
 #define __PARSE_HEADER_HPP__
 
-std::pair<std::string,std::string> parse_header(std::string& header) {
+std::pair<std::string, std::string> parse_header(std::string &header) {
     std::string header_key, header_val;
-    
+
     header_val.reserve(50); //pre alloc space
 
     auto pos = header.find(":");
-    header_key = trim(header.substr(0,pos));
-    header_val = trim(header.substr(pos+1));
+    header_key = trim(header.substr(0, pos));
+    header_val = trim(header.substr(pos + 1));
 
-    return std::make_pair(header_key,header_val);    
+    return std::make_pair(header_key, header_val);
 }
 
 #endif

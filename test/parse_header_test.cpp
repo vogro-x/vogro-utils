@@ -15,7 +15,7 @@ int main(void) {
     std::string header7 = "Referer: https://blog.csdn.net/Aquester/article/details/27680643";
     std::string header8 = "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 Query String Parameters";
     std::string badHeader = " BadHeader   :   bad header content ";
-    
+
     auto header1_pair = parse_header(header1);
     auto header2_pair = parse_header(header2);
     auto header3_pair = parse_header(header3);
