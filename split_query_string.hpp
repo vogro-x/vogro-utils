@@ -1,3 +1,13 @@
+/************************************************************************ 
+ * Copyright (c) 2018- , Andrewpqc <andrewpqc@mails.ccnu.edu>           *
+ * All rights reserved.                                                 * 
+ *                                                                      *
+ * Apache License, Version 2.0                                          *
+ * See http://www.apache.org/licenses/ for terms and contions for use,  *
+ * reproduction, and distribution.                                      *
+ *                                                                      *
+ ************************************************************************/
+
 #ifndef __SPLIT_QUERY_STRING_HPP
 #define __SPLIT_QUERY_STRING_HPP
 
@@ -11,7 +21,7 @@ std::map<std::string,std::string> split_query_string(std::string str) {
     if(str.length()==0){
         return results;
     }
-    
+
     for (auto i = 0; i <= str.length(); i++) {
         if (i == str.length() || str[i] == '&') {
             flag = true;
