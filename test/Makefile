@@ -23,3 +23,8 @@ trim_string:
 	g++ -std=c++11 trim_string_test.cpp -o trim_string
 	./trim_string
 	rm trim_string
+
+split:
+	g++ -std=c++11 split_query_string_test.cpp -o split
+	./split
+	rm split
