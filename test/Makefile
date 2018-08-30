@@ -3,6 +3,7 @@ all:
 	make parse_request_line
 	make url_match
 	make trim_string 
+	make split
 	
 parse_header:
 	g++ -std=c++11 parse_header_test.cpp -o parse_header
@@ -28,3 +29,6 @@ split:
 	g++ -std=c++11 split_query_string_test.cpp -o split
 	./split
 	rm split
+
+clean:
+	rm parse_header parse_request_line url_match trim_string split
