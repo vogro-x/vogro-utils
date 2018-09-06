@@ -29,6 +29,8 @@ split:
 	g++ -std=c++11 split_query_string_test.cpp -o split
 	./split
 	rm split
+gzip:
+	g++ -std=c++11  gzip_compress_and_decompress.cpp -lboost_iostreams -o gzip
 
 clean:
-	rm parse_header parse_request_line url_match trim_string split
+	rm parse_header parse_request_line url_match trim_string split gzip
