@@ -22,28 +22,19 @@
  */ 
 std::pair<bool,bool> urlMatch(std::string requestUrl, std::string handlerUrl, std::map<std::string, std::string> &storeMap) {
     // whether request serve template file or static file
-    if (requestUrl.find("/static")==0){
-        return std::make_pair(false,true); //此处表明是对静态文件的请求
-    }
+    if (requestUrl.find("/static")==0){ return std::make_pair(false,true); }
     
 
-    if (handlerUrl.back() != '/') {
-        handlerUrl += '/';
-    }
+    if (handlerUrl.back() != '/') { handlerUrl += '/'; }
 
-    if (requestUrl.back() != '/') {
-        requestUrl += '/';
-    }
+    if (requestUrl.back() != '/') { requestUrl += '/'; }
 
-    std::string type;
-    std::string name;
-    std::string dynamicParam;
+    std::string type, name, dynamicParam;
 
-    auto tempIndex = 0;
     auto handlerUrlLength=handlerUrl.length();
     auto requestUrlLength=requestUrl.length();
     auto max_length = (handlerUrlLength > requestUrlLength) ? handlerUrlLength : requestUrlLength;
-    for (auto i = 0, j = 0; i < max_length; i++, j++) {
+    for (auto i = 0, j = 0; (i < max_length)&&(j < max_length); ++i, ++j) {
         if (handlerUrl[i] == '{') {
             auto tempIndex = i + 1;
             bool flag = true; //true代表当前在type域中
@@ -53,26 +44,16 @@ std::pair<bool,bool> urlMatch(std::string requestUrl, std::string handlerUrl, st
                     ++tempIndex;
                 }
 
-                if (!flag) {
-                    name += handlerUrl[tempIndex];
-                }
-                else {
-                    type += handlerUrl[tempIndex];
-                }
+                if (!flag) name += handlerUrl[tempIndex];
+                else type += handlerUrl[tempIndex];
 
                 ++tempIndex;
             } while (handlerUrl[tempIndex] != '}');
 
             i = tempIndex + 1;
 
-            if (flag == true) {
-                type = "int"; // default type is int
-            }
-
-            //[int:id]   type:int name:id flag=false
-            //[str:username] type:str name:username flag=false
-            //[id]      type:int name:id flag=true
-
+            if (flag == true)  type = "int"; // default type is int
+            
             do {
                 // if type is int, every char in dynamicParam should be in [48,57]
                 if ((type == "int") && (requestUrl[j] < 48 || requestUrl[j] > 57)) {
