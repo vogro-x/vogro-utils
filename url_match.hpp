@@ -15,9 +15,63 @@
 
 #include <string>
 #include <map>
+#include <locale>
+#include <codecvt>
 
 #ifndef __URL_MATCH_HPP__
 #define __URL_MATCH_HPP__
+
+
+inline static std::string url_encode(const std::string &value) noexcept {
+    static auto hex_chars = "0123456789ABCDEF";
+
+    std::string result;
+    result.reserve(value.size()); // Minimum size of result
+
+    for (auto &chr : value) {
+        if (!((chr >= '0' && chr <= '9') || (chr >= 'A' && chr <= 'Z') || (chr >= 'a' && chr <= 'z') || chr == '-' || chr == '.' || chr == '_' || chr == '~'))
+            result += std::string("%") + hex_chars[static_cast<unsigned char>(chr) >> 4] + hex_chars[static_cast<unsigned char>(chr) & 15];
+        else
+            result += chr;
+    }
+
+    return result;
+}
+
+inline static std::string url_decode(const std::string &value) noexcept {
+    std::string result;
+    result.reserve(value.size() / 3 + (value.size() % 3)); // Minimum size of result
+
+    for (std::size_t i = 0; i < value.size(); ++i) {
+        auto &chr = value[i];
+        if (chr == '%' && i + 2 < value.size()) {
+            auto hex = value.substr(i + 1, 2);
+            auto decoded_chr = static_cast<char>(std::strtol(hex.c_str(), nullptr, 16));
+            result += decoded_chr;
+            i += 2;
+        }
+        else if (chr == '+')
+            result += ' ';
+        else
+            result += chr;
+    }
+
+    return result;
+}
+
+inline static  std::string u8wstring_to_string(const std::wstring& wstr)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+    return conv.to_bytes(wstr);
+}
+
+inline static std::wstring u8string_to_wstring(const std::string& str)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t> > conv;
+    return conv.from_bytes(str);
+}
+
+
 
 /***
  *  pair(a,b)
@@ -25,26 +79,26 @@
  *  if(a&&!b) a normal match
  *  if(!a&&b) a match to request static files
  */ 
-std::pair<bool,bool> urlMatch(std::string requestUrl, std::string handlerUrl, std::map<std::string, std::string> &storeMap) {
+std::pair<bool,bool> urlMatch(std::wstring requestUrl, std::wstring handlerUrl, std::map<std::string, std::string> &storeMap) {
     // whether request serve template file or static file
-    if (requestUrl.find("/static")==0){ return std::make_pair(false,true); }
+    if (requestUrl.find(L"/static")==0){ return std::make_pair(false,true); }
     
 
     if (handlerUrl.back() != '/') { handlerUrl += '/'; }
 
     if (requestUrl.back() != '/') { requestUrl += '/'; }
 
-    std::string type, name, dynamicParam;
+    std::wstring type, name, dynamicParam;
 
     auto handlerUrlLength=handlerUrl.length();
     auto requestUrlLength=requestUrl.length();
     auto max_length = (handlerUrlLength > requestUrlLength) ? handlerUrlLength : requestUrlLength;
     for (auto i = 0, j = 0; (i < max_length)&&(j < max_length); ++i, ++j) {
-        if (handlerUrl[i] == '{') {
+        if (handlerUrl[i] == L'{') {
             auto tempIndex = i + 1;
             bool flag = true; //true代表当前在type域中
             do {
-                if (handlerUrl[tempIndex] == ':') {
+                if (handlerUrl[tempIndex] == L':') {
                     flag = false;
                     ++tempIndex;
                 }
@@ -53,23 +107,23 @@ std::pair<bool,bool> urlMatch(std::string requestUrl, std::string handlerUrl, st
                 else type += handlerUrl[tempIndex];
 
                 ++tempIndex;
-            } while (handlerUrl[tempIndex] != '}');
+            } while (handlerUrl[tempIndex] != L'}');
 
             i = tempIndex + 1;
 
-            if (flag == true)  type = "int"; // default type is int
+            if (flag == true)  type = L"int"; // default type is int
             
             do {
                 // if type is int, every char in dynamicParam should be in [48,57]
-                if ((type == "int") && (requestUrl[j] < 48 || requestUrl[j] > 57)) {
+                if ((type == L"int") && (requestUrl[j] < 48 || requestUrl[j] > 57)) {
                     return std::make_pair(false,false);
                 }
                 dynamicParam += requestUrl[j];
                 ++j;
-            } while (requestUrl[j] != '/');
+            } while (requestUrl[j] != L'/');
 
             // store the dynamic parameters to storeMap
-            storeMap[name] = dynamicParam;
+            storeMap[u8wstring_to_string(name)] = u8wstring_to_string(dynamicParam);
 
             // clear name, type, dynamicParam
             name.clear();
