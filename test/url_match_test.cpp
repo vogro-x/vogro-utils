@@ -56,13 +56,17 @@ int main(void) {
     auto result8 = urlMatch(u8string_to_wstring(reqUrl8), u8string_to_wstring(handlerUrl8), pathParam);
     assert(!result8.first && result8.second);
 
-     std::string reqUrl9 = "/abc/阿超/kk";
+    std::string reqUrl9 = "/abc/阿超/kk";
     std::string handlerUrl9 = "/abc/{str:name}/kk";
     auto result9 = urlMatch(u8string_to_wstring(reqUrl9), u8string_to_wstring(handlerUrl9), pathParam);
     assert(result9.first && !result9.second);
-    std::cout<<pathParam.at("name")<<std::endl;
+    // std::cout<<pathParam.at("name")<<std::endl;
     assert(pathParam.at("name") == "阿超");
     pathParam.clear();
 
+    std::string reqUrl10 = "/username/addddd/kk/jjj";
+    std::string handlerUrl10= "/username/{str:name}/kk/";
+    auto result10 = urlMatch(u8string_to_wstring(reqUrl10), u8string_to_wstring(handlerUrl10), pathParam);
+    assert(!result10.first && !result10.second);
     return 0;
 }

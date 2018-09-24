@@ -84,16 +84,18 @@ std::pair<bool,bool> urlMatch(std::wstring requestUrl, std::wstring handlerUrl, 
     if (requestUrl.find(L"/static")==0){ return std::make_pair(false,true); }
     
 
-    if (handlerUrl.back() != '/') { handlerUrl += '/'; }
+    if (handlerUrl.back() != L'/') { handlerUrl += L'/'; }
 
-    if (requestUrl.back() != '/') { requestUrl += '/'; }
+    if (requestUrl.back() != L'/') { requestUrl += L'/'; }
 
     std::wstring type, name, dynamicParam;
 
     auto handlerUrlLength=handlerUrl.length();
     auto requestUrlLength=requestUrl.length();
     auto max_length = (handlerUrlLength > requestUrlLength) ? handlerUrlLength : requestUrlLength;
-    for (auto i = 0, j = 0; (i < max_length)&&(j < max_length); ++i, ++j) {
+    int i=0, j=0;
+    for ( ; (i < max_length)&&(j < max_length); ++i, ++j) {
+    // for (auto i = 0, j = 0; (i < handlerUrlLength)&&(j < requestUrlLength); ++i, ++j) {
         if (handlerUrl[i] == L'{') {
             auto tempIndex = i + 1;
             bool flag = true; //true代表当前在type域中
@@ -135,6 +137,8 @@ std::pair<bool,bool> urlMatch(std::wstring requestUrl, std::wstring handlerUrl, 
             return std::make_pair(false,false);
         }
     }
+
+    if(j < requestUrlLength ) return std::make_pair(false,false);
     return std::make_pair(true,false);
 }
 
